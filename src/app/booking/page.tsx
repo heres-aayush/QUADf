@@ -1,5 +1,6 @@
 "use client"
 import Navigation from "@/components/navigation"
+// import React, { useState } from "react";
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Calendar, Car, Clock, CreditCard, Info, MapPin, Plus, User } from 'lucide-react'
@@ -18,7 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon } from 'lucide-react'
-import { format } from "date-fns"
+import { format, set } from "date-fns"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 
@@ -27,6 +28,7 @@ export default function BookingPage() {
     const [date, setDate] = useState<Date>()
     const [bookingStep, setBookingStep] = useState(1)
     const [rideType, setRideType] = useState("standard")
+    const [selectedDriver, setSelectedDriver] = useState<number | null>(null);
     const [paymentMethod, setPaymentMethod] = useState("card")
     const [pickupLocation, setPickupLocation] = useState("")
     const [destination, setDestination] = useState("")
@@ -220,7 +222,7 @@ export default function BookingPage() {
                                     </div>
                                   </div>
                                   <div className="text-right">
-                                    <p className="font-medium">$12.50</p>
+                                    <p className="font-medium">100.50 Rs</p>
                                     <p className="text-sm text-muted-foreground">20 min</p>
                                   </div>
                                 </div>
@@ -244,7 +246,7 @@ export default function BookingPage() {
                                     </div>
                                   </div>
                                   <div className="text-right">
-                                    <p className="font-medium">$18.75</p>
+                                    <p className="font-medium">187 Rs</p>
                                     <p className="text-sm text-muted-foreground">20 min</p>
                                   </div>
                                 </div>
@@ -268,7 +270,7 @@ export default function BookingPage() {
                                     </div>
                                   </div>
                                   <div className="text-right">
-                                    <p className="font-medium">$25.00</p>
+                                    <p className="font-medium">250 Rs</p>
                                     <p className="text-sm text-muted-foreground">20 min</p>
                                   </div>
                                 </div>
@@ -339,6 +341,7 @@ export default function BookingPage() {
                   <div className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
+                      <RadioGroup defaultValue="standar" value={rideType} onValueChange={setRideType} >
                         <RadioGroupItem value="any" id="any" defaultChecked />
                         <Label htmlFor="any" className="flex-1 cursor-pointer">
                           <Card className="cursor-pointer border-primary">
@@ -357,12 +360,20 @@ export default function BookingPage() {
                             </CardContent>
                           </Card>
                         </Label>
+                      </RadioGroup>
                       </div>
                       <div className="pt-4">
                         <h3 className="font-medium mb-4">Or choose a specific driver:</h3>
                         <div className="space-y-4">
                           {[1, 2, 3].map((i) => (
-                            <Card key={i} className="cursor-pointer hover:border-primary">
+                            <Card
+                              key={i}
+                              className={cn(
+                                "cursor-pointer hover:border-primary",
+                                selectedDriver === i && "border-primary bg-primary/10"
+                              )}
+                              onClick={() => setSelectedDriver(i)}
+                            >
                               <CardContent className="p-4">
                                 <div className="flex justify-between items-center">
                                   <div className="flex items-center gap-4">
@@ -373,7 +384,7 @@ export default function BookingPage() {
                                     <div>
                                       <h3 className="font-medium">{["Michael Smith", "Sarah Johnson", "Robert Brown"][i-1]}</h3>
                                       <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className="text-xs">4.{8+i} ★</Badge>
+                                        <Badge variant="outline" className="text-xs">4.{8 + i} ★</Badge>
                                         <span className="text-xs text-muted-foreground">{100 + i*50}+ rides</span>
                                       </div>
                                     </div>
