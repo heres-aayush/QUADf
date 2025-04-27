@@ -33,9 +33,6 @@ export default function LandingPage() {
                     Book a Ride
                     </a>
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8">
-                    Offer a Ride
-                  </Button>
                 </div>
               </div>
               <div className="relative h-[300px] md:h-[500px] rounded-xl overflow-hidden flex items-center justify-center">
