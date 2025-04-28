@@ -15,6 +15,9 @@ export function BookingMap({ pickupLocation, destination }: BookingMapProps) {
   const [pickupMarker, setPickupMarker] = useState<any>(null)
   const [destinationMarker, setDestinationMarker] = useState<any>(null)
   const [routeLine, setRouteLine] = useState<any>(null)
+  const [currentLocationMarker, setCurrentLocationMarker] = useState<any>(null)
+  const [locationWatchId, setLocationWatchId] = useState<number | null>(null)
+  const [locationError, setLocationError] = useState<string | null>(null)
 
   // Load HERE Maps scripts
   useEffect(() => {
@@ -250,9 +253,109 @@ export function BookingMap({ pickupLocation, destination }: BookingMapProps) {
     )
   }, [mapLoaded, map, platform, pickupLocation, destination])
 
+  // Function to center map on current location
+  const centerMapOnLocation = () => {
+    if (!map || !platform) return;
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const H = (window as any).H;
+          const currentPoint = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          // Remove previous marker if it exists
+          if (currentLocationMarker) {
+            map.removeObject(currentLocationMarker);
+          }
+
+          // Create a new marker for current location
+          const newMarker = new H.map.Marker(currentPoint, {
+            icon: new H.map.Icon('/current-location.png', { size: { w: 32, h: 32 } })
+          });
+          
+          map.addObject(newMarker);
+          setCurrentLocationMarker(newMarker);
+
+          // Center map on current location
+          map.setCenter(currentPoint);
+          map.setZoom(15);
+
+          // Start watching position for updates
+          if (locationWatchId !== null) {
+            navigator.geolocation.clearWatch(locationWatchId);
+          }
+
+          const watchId = navigator.geolocation.watchPosition(
+            (updatedPosition) => {
+              const updatedPoint = {
+                lat: updatedPosition.coords.latitude,
+                lng: updatedPosition.coords.longitude
+              };
+
+              // Update marker position
+              if (currentLocationMarker) {
+                currentLocationMarker.setGeometry(updatedPoint);
+              }
+            },
+            (error) => {
+              setLocationError(error.message);
+              console.error('Location error:', error);
+            },
+            { enableHighAccuracy: true }
+          );
+          setLocationWatchId(watchId);
+        },
+        (error) => {
+          setLocationError(error.message);
+          console.error('Location error:', error);
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      setLocationError('Geolocation is not supported by your browser');
+    }
+  };
+
+  // Clean up location watch when component unmounts
+  useEffect(() => {
+    return () => {
+      if (locationWatchId !== null) {
+        navigator.geolocation.clearWatch(locationWatchId);
+      }
+    };
+  }, [locationWatchId]);
+
   return (
-    <div className="w-full h-full">
+    <div className="relative w-full h-full">
       <div ref={mapRef} className="w-full h-full rounded-lg" />
+      <button
+        onClick={centerMapOnLocation}
+        className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+        title="Center on my location"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Z" />
+          <circle cx="12" cy="9" r="2.5" />
+        </svg>
+      </button>
+      {locationError && (
+        <div className="absolute bottom-4 left-4 bg-red-100 text-red-800 px-4 py-2 rounded-lg shadow-md">
+          {locationError}
+        </div>
+      )}
       <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
     </div>
   )
