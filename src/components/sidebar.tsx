@@ -1,9 +1,8 @@
 "use client"
 
-import { Car, Clock, CreditCard, Home, MapPin, Settings, Star, Users } from "lucide-react"
+import { Car, Clock, CreditCard, Home, MapPin, Settings, Star, Users, LogInIcon as Subscription } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
   userType: "COMMUTER_SELF" | "COMMUTER_PARENT" | "DRIVER" | "AGENCY"
@@ -16,6 +15,7 @@ export function Sidebar({ userType }: SidebarProps) {
       { icon: <Clock className="h-5 w-5" />, label: "Upcoming Rides", href: "#" },
       { icon: <MapPin className="h-5 w-5" />, label: "Find a Ride", href: "#" },
       { icon: <Clock className="h-5 w-5" />, label: "Ride History", href: "#" },
+      { icon: <Subscription className="h-5 w-5" />, label: "Subscriptions", href: "/subscriptions" },
       { icon: <Settings className="h-5 w-5" />, label: "Profile & Preferences", href: "#" },
     ],
     COMMUTER_PARENT: [
@@ -23,6 +23,7 @@ export function Sidebar({ userType }: SidebarProps) {
       { icon: <Clock className="h-5 w-5" />, label: "Child's Scheduled Rides", href: "#" },
       { icon: <MapPin className="h-5 w-5" />, label: "Book a Ride", href: "#" },
       { icon: <Users className="h-5 w-5" />, label: "Trusted Drivers", href: "#" },
+      { icon: <Subscription className="h-5 w-5" />, label: "Subscriptions", href: "/subscriptions" },
       { icon: <Settings className="h-5 w-5" />, label: "Emergency Contacts", href: "#" },
     ],
     DRIVER: [
@@ -59,7 +60,11 @@ export function Sidebar({ userType }: SidebarProps) {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                index === 0 ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                item.href === "/subscriptions" && window.location.pathname === "/subscriptions"
+                  ? "bg-accent text-accent-foreground"
+                  : index === 0
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground",
               )}
             >
               {item.icon}
@@ -71,4 +76,3 @@ export function Sidebar({ userType }: SidebarProps) {
     </div>
   )
 }
-
