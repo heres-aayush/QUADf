@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Check, Info } from "lucide-react"
 import Navigation from "@/components/navigation"
@@ -22,6 +22,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from "@/components/ui/input"
+import Loading from "./loading"
 // import { toast } from "@/components/ui/use-toast"
 
 export default function SubscriptionsPage() {
@@ -30,23 +31,31 @@ export default function SubscriptionsPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<string>("credit-card")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Get user data from localStorage
-  useState(() => {
-    const userData = localStorage.getItem("user")
-    if (!userData) {
+  // Move localStorage check to useEffect
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem("user")
+      if (!userData) {
+        router.push("/auth")
+        return
+      }
+
+      const { userType: storedUserType } = JSON.parse(userData)
+      if (storedUserType !== "COMMUTER_SELF" && storedUserType !== "COMMUTER_PARENT") {
+        router.push("/")
+        return
+      }
+
+      setUserType(storedUserType)
+    } catch (error) {
+      console.error("Error accessing localStorage:", error)
       router.push("/auth")
-      return
+    } finally {
+      setIsLoading(false)
     }
-
-    const { userType: storedUserType } = JSON.parse(userData)
-    if (storedUserType !== "COMMUTER_SELF" && storedUserType !== "COMMUTER_PARENT") {
-      router.push("/")
-      return
-    }
-
-    setUserType(storedUserType)
-  })
+  }, [router])
 
   const handleSubscribe = (plan: string) => {
     setSelectedPlan(plan)
@@ -63,8 +72,14 @@ export default function SubscriptionsPage() {
     // })
   }
 
+  // Show loading state
+  if (isLoading) {
+    return <Loading />
+  }
+
+  // Show nothing if no user type (will redirect)
   if (!userType) {
-    return null // or a loading spinner
+    return null
   }
 
   return (
@@ -319,7 +334,7 @@ function SubscriptionCard({
   onSubscribe,
 }: SubscriptionCardProps) {
   return (
-    <Card className={`flex flex-col Rs.{popular ? "border-primary shadow-md" : ""}`}>
+    <Card className={`flex flex-col ${popular ? "border-primary shadow-md" : ""}`}>
       {popular && (
         <div className="absolute top-0 right-0 -mt-2 -mr-2">
           <Badge className="bg-primary text-primary-foreground">Popular</Badge>
