@@ -1,3 +1,5 @@
+"use client"
+
 import { ActiveRide } from "@/components/active-ride"
 
 export default function StartRidePage() {
