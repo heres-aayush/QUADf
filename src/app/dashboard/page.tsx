@@ -14,27 +14,61 @@ type UserType = "COMMUTER_SELF" | "COMMUTER_PARENT" | "DRIVER" | "AGENCY";
 export default function Home() {
   const router = useRouter();
   const [userType, setUserType] = useState<UserType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      // If no user data, redirect to login
-      router.push('/auth');
-      return;
-    }
+    try {
+      // Get user data from localStorage
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        router.push('/auth');
+        return;
+      }
 
-    const { userType: storedUserType } = JSON.parse(userData);
-    setUserType(storedUserType as UserType);
+      const parsedData = JSON.parse(userData);
+      
+      // Check if user is logged in
+      if (!parsedData.isLoggedIn) {
+        router.push('/auth');
+        return;
+      }
+
+      // Validate user type
+      const storedUserType = parsedData.userType;
+      if (!storedUserType || !["COMMUTER_SELF", "COMMUTER_PARENT", "DRIVER", "AGENCY"].includes(storedUserType)) {
+        console.error("Invalid user type:", storedUserType);
+        localStorage.removeItem('user');
+        router.push('/auth');
+        return;
+      }
+
+      setUserType(storedUserType as UserType);
+    } catch (error) {
+      console.error("Error accessing user data:", error);
+      localStorage.removeItem('user');
+      router.push('/auth');
+    } finally {
+      setIsLoading(false);
+    }
   }, [router]);
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Only render dashboard if we have a valid user type
   if (!userType) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
     <> 
-      <Navigation/>
+      <Navigation />
       <DashboardLayout userType={userType}>
         {userType === "COMMUTER_SELF" && <CommuterDashboard />}
         {userType === "COMMUTER_PARENT" && <ParentDashboard />}

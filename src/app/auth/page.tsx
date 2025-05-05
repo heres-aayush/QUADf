@@ -96,7 +96,10 @@ export default function AuthPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify({
+          ...loginData,
+          userType
+        }),
       })
 
       const data = await response.json()
@@ -107,8 +110,9 @@ export default function AuthPage() {
 
       // Store user data in localStorage with the same structure as registration
       localStorage.setItem('user', JSON.stringify({
-        email: loginData.email, // Use the email from login form
-        name: loginData.email.split('@')[0], // Use email username as name
+        email: loginData.email,
+        userType: userType,
+        name: loginData.email.split('@')[0],
         isLoggedIn: true
       }))
 

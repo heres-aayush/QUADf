@@ -1,10 +1,10 @@
 import { CalendarClock, Car, Clock, CreditCard, MapPin, Star } from "lucide-react"
+import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RideMap } from "@/components/ride-map"
 import { Badge } from "@/components/ui/badge"
 import { BookingMap } from "@/components/booking-map"
 
@@ -17,9 +17,11 @@ export function DriverDashboard() {
           <p className="text-muted-foreground">Here&apos;s your driving schedule and earnings.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button className="rounded-full">
-            <Car className="mr-2 h-4 w-4" />
-            Start Driving
+          <Button className="rounded-full" asChild>
+            <Link href="/start-ride">
+              <Car className="mr-2 h-4 w-4" />
+              Start Driving
+            </Link>
           </Button>
         </div>
       </div>
@@ -342,4 +344,3 @@ export function DriverDashboard() {
     </div>
   )
 }
-
