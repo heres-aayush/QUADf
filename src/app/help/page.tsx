@@ -5,6 +5,7 @@ import Navigation from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Mail, MessageCircle, Phone, HelpCircle } from "lucide-react"
+import Link from "next/link"
 
 const HelpPage: React.FC = () => {
     return (
@@ -115,7 +116,7 @@ const HelpPage: React.FC = () => {
                                 variant="outline"
                                 className="text-lg px-8 bg-transparent border-white hover:bg-white/10"
                             >
-                                View Documentation
+                                <Link href="/how-to-use">View Documentation</Link>
                             </Button>
                         </div>
                     </div>

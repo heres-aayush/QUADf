@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { BookingMap } from "@/components/booking-map"
+import Link from "next/link"
 
 export function ParentDashboard() {
   return (
@@ -17,7 +18,7 @@ export function ParentDashboard() {
         <div className="flex items-center gap-2">
           <Button className="rounded-full">
             <MapPin className="mr-2 h-4 w-4" />
-            Book a Ride for Child
+            <Link href="/booking/child">Book a Ride for Child</Link>
           </Button>
         </div>
       </div>
