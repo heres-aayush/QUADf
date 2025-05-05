@@ -23,11 +23,10 @@ type Language = "en" | "bn" | "hi"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
-  userType: "commuter" | "parent" | "driver" | "agency"
-  onUserTypeChange: (userType: "commuter" | "parent" | "driver" | "agency") => void
+  userType: "COMMUTER_SELF" | "COMMUTER_PARENT" | "DRIVER" | "AGENCY"
 }
 
-export function DashboardLayout({ children, userType, onUserTypeChange }: DashboardLayoutProps) {
+export function DashboardLayout({ children, userType }: DashboardLayoutProps) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   // Add language state
@@ -52,7 +51,7 @@ export function DashboardLayout({ children, userType, onUserTypeChange }: Dashbo
       <div className="flex min-h-screen">
         {/* Sidebar for desktop */}
         <div className="hidden md:block">
-          <Sidebar userType={userType} onUserTypeChange={onUserTypeChange} />
+          <Sidebar userType={userType} />
         </div>
 
         {/* Mobile sidebar */}
@@ -63,7 +62,7 @@ export function DashboardLayout({ children, userType, onUserTypeChange }: Dashbo
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0">
-            <Sidebar userType={userType} onUserTypeChange={onUserTypeChange} />
+            <Sidebar userType={userType} />
           </SheetContent>
         </Sheet>
 
@@ -131,20 +130,9 @@ export function DashboardLayout({ children, userType, onUserTypeChange }: Dashbo
 
           {/* User type selector for mobile */}
           <div className="md:hidden p-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span className="capitalize">{userType} Dashboard</span>
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full">
-                <DropdownMenuItem onClick={() => onUserTypeChange("commuter")}>Commuter Dashboard</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onUserTypeChange("parent")}>Parent Dashboard</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onUserTypeChange("driver")}>Driver Dashboard</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onUserTypeChange("agency")}>Agency Dashboard</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="outline" className="w-full justify-between">
+              <span className="capitalize">{userType.replace('_', ' ')} Dashboard</span>
+            </Button>
           </div>
 
           {/* Main content */}
